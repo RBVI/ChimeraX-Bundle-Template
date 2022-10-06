@@ -16,10 +16,18 @@
 #    certificates or data files from template expansion)
 
 # Define where ChimeraX is installed.
-OS = $(patsubst CYGWIN_NT%,CYGWIN_NT,$(shell uname -s))
+OS=$(shell uname -s)
+# We're on Windows
+ifeq ($(filter $(OS),Linux Darwin),)
+OS=$(shell uname -o)
+ifneq ($(filter $(OS),Cygwin Msys),)
+OS=Windows
+endif
+endif
+
 # CHIMERAX_APP is the ChimeraX install folder
 # We use ?= to let CHIMERAX_APP environment variable override
-ifeq ($(OS),CYGWIN_NT)
+ifeq ($(OS),Windows)
 # Windows
 CHIMERAX_APP ?= "c:/Program Files/ChimeraX.app"
 endif
@@ -30,7 +38,7 @@ endif
 
 # Platform-dependent settings.  Should not need fixing.
 # For Windows, we assume Cygwin is being used.
-ifeq ($(OS),CYGWIN_NT)
+ifeq ($(OS),Windows)
 CHIMERAX_EXE = $(CHIMERAX_APP)/bin/ChimeraX.exe
 endif
 ifeq ($(OS),Darwin)
